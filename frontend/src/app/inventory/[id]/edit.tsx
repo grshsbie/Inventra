@@ -1,61 +1,67 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
-export default function Inventory() {
-  const [items, setItems] = useState([]);
+export default function EditInventoryItem() {
   const [sensorOrModuleId, setSensorOrModuleId] = useState(0);  // Numeric ID
   const [sensorModule, setSensorModule] = useState('');         // Sensor/Module Name
   const [registrationDate, setRegistrationDate] = useState(''); // Registration Date
   const [price, setPrice] = useState('');                       // Optional price
   const [quantity, setQuantity] = useState(0);                  // Quantity
+  const router = useRouter();
+  const { id } = useParams();  // Get item ID from URL
 
+  // Fetch the inventory item details when the component loads
   useEffect(() => {
-    const fetchInventory = async () => {
-      const response = await fetch('/api/inventory');
+    const fetchItem = async () => {
+      const response = await fetch(`/api/inventory/${id}`);
       const data = await response.json();
-      setItems(data);
+      setSensorOrModuleId(data.sensorOrModuleId);
+      setSensorModule(data.sensorModule);
+      setRegistrationDate(data.registrationDate.split('T')[0]); // Extract only the date part
+      setPrice(data.price);
+      setQuantity(data.quantity);
     };
 
-    fetchInventory();
-  }, []);
+    fetchItem();
+  }, [id]);
 
-  const handleAddInventory = async (e: React.FormEvent) => {
+  const handleUpdateInventory = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const response = await fetch('/api/inventory', {
-      method: 'POST',
+    const response = await fetch(`/api/inventory/${id}`, {
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         sensorOrModuleId,
         sensorModule,
-        registrationDate: registrationDate || new Date().toISOString(),  // Set current date if empty
+        registrationDate,
         price,
         quantity,
       }),
     });
 
     if (response.ok) {
-      const newItem = await response.json();
-      setItems([...items, newItem]);  // Add new item to the list
-      alert('Item added to inventory successfully!');
+      alert('Item updated successfully!');
+      router.push('/inventory');  // Redirect back to inventory list
     } else {
-      alert('Failed to add item to inventory');
+      alert('Failed to update item');
     }
   };
 
   return (
     <div>
-      <h1>Inventory Management</h1>
-
-      {/* Form to add a new inventory item */}
-      <form onSubmit={handleAddInventory}>
+      <h1>Edit Inventory Item</h1>
+      <form onSubmit={handleUpdateInventory}>
         <label>Sensor/Module ID (Numeric):</label>
         <input
           type="number"
           value={sensorOrModuleId}
           onChange={(e) => setSensorOrModuleId(Number(e.target.value))}
           required
+          disabled
         />
 
         <label>Sensor/Module Name:</label>
@@ -88,19 +94,8 @@ export default function Inventory() {
           required
         />
 
-        <button type="submit">Add to Inventory</button>
+        <button type="submit">Update Item</button>
       </form>
-
-      {/* List all inventory items */}
-      <ul>
-        {items.map((item) => (
-          <li key={item.sensorOrModuleId}>
-            <strong>{item.sensorModule}</strong> - Quantity: {item.quantity}
-            <button onClick={() => handleDeleteItem(item.sensorOrModuleId)}>Delete</button>
-            <a href={`/inventory/${item.sensorOrModuleId}/edit`}>Edit</a>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }
