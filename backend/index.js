@@ -1,12 +1,11 @@
 const express = require('express');
 const cors = require('cors');
-const connectDB = require('./config/db'); // MongoDB connection
+const connectDB = require('./config/config'); // MongoDB connection
 const errorHandler = require('./middleware/errorHandler'); // Global error handler
 require('dotenv').config(); // Load environment variables
 
-// Import Routes
 const authRoutes = require('./routes/authRoutes');
-const inventoryRoutes = require('./routes/inventoryRoutes');
+const inventoryRoutes = require('./routes/inventory');
 const projectRoutes = require('./routes/projectRoutes');
 
 const app = express();

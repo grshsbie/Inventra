@@ -1,45 +1,51 @@
-const Inventory = require('../models/Inventory');
+const Inventory = require('../models/inventoryModel');
 
+// Add Inventory Item
 exports.addInventory = async (req, res) => {
-  const { id, name, number, registrationDate, price } = req.body;
+  const { sensorOrModuleId, name, registrationDate, price, quantity } = req.body;
 
   try {
-    const newInventory = new Inventory({
-      id,
-      name,
-      number,
-      registrationDate,
-      price
-    });
-
-    await newInventory.save();
-    res.json({ message: 'Inventory added successfully', item: newInventory });
+    const inventoryItem = new Inventory({ sensorOrModuleId, name, registrationDate, price, quantity });
+    await inventoryItem.save();
+    res.status(201).json({ message: 'Inventory item added successfully', inventoryItem });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err });
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
 
+// Get All Inventory Items
 exports.getInventory = async (req, res) => {
   try {
-    const inventory = await Inventory.find();
-    res.json(inventory);
+    const items = await Inventory.find();
+    res.json(items);
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err });
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
 
+// Update Inventory Item
 exports.updateInventory = async (req, res) => {
-  const { id, quantity } = req.body;
+  const { id } = req.params;
+  const updateData = req.body;
 
   try {
-    const item = await Inventory.findOne({ id });
+    const item = await Inventory.findByIdAndUpdate(id, updateData, { new: true });
     if (!item) return res.status(404).json({ message: 'Item not found' });
-
-    item.number -= quantity;
-    await item.save();
-
-    res.json({ message: 'Inventory updated successfully', item });
+    res.json({ message: 'Inventory item updated successfully', item });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err });
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+// Delete Inventory Item
+exports.deleteInventory = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const item = await Inventory.findByIdAndDelete(id);
+    if (!item) return res.status(404).json({ message: 'Item not found' });
+    res.json({ message: 'Inventory item deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };

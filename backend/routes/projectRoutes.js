@@ -1,12 +1,10 @@
 const express = require('express');
+const { createProject, getProjects, updateProject, deleteProject } = require('../controllers/projectController');
 const router = express.Router();
-const { createProject, getProjects } = require('../controllers/projectController');
-const authMiddleware = require('../middleware/auth'); // For JWT authentication
 
-// Create a new project and update inventory
-router.post('/create', authMiddleware, createProject);
-
-// Get all projects
-router.get('/', authMiddleware, getProjects);
+router.post('/', createProject);
+router.get('/', getProjects);
+router.put('/:id', updateProject);
+router.delete('/:id', deleteProject);
 
 module.exports = router;
