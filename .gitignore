@@ -1,0 +1,40 @@
+# Node.js related
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Directory for secret environment variables
+.env
+.env.local
+
+# Mac OS specific
+.DS_Store
+
+# Linux specific
+*~
+
+# Next.js related
+.next/
+out/
+build/
+.cache/
+
+# Ignore IDE project files
+.idea/
+.vscode/
+*.swp
+
+# Ignore coverage files for testing
+coverage/
+.nyc_output/
+
+# Ignore package-lock.json or yarn.lock if you prefer to generate the lock files each time (optional)
+package-lock.json
+yarn.lock
