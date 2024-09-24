@@ -1,17 +1,23 @@
 const Inventory = require('../models/inventoryModel');
 
-// Add Inventory Item
 exports.addInventory = async (req, res) => {
-  const { sensorOrModuleId, name, registrationDate, price, quantity } = req.body;
+  const { sensorOrModuleId, sensorModule, registrationDate, price, quantity } = req.body;
 
   try {
-    const inventoryItem = new Inventory({ sensorOrModuleId, name, registrationDate, price, quantity });
+    const inventoryItem = new Inventory({
+      sensorOrModuleId: Number(sensorOrModuleId), // Keep as Number
+      sensorModule, // Use the new field
+      registrationDate,
+      price,
+      quantity
+    });
     await inventoryItem.save();
     res.status(201).json({ message: 'Inventory item added successfully', inventoryItem });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
 
 // Get All Inventory Items
 exports.getInventory = async (req, res) => {

@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 const inventorySchema = new mongoose.Schema({
   sensorOrModuleId: {
-    type: String,
+    type: Number, // Numeric ID
     required: true,
     unique: true,
   },
-  name: {
+  sensorModule: { // New field for sensor/module name
     type: String,
     required: true,
   },
